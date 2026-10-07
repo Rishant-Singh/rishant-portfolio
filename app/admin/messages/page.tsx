@@ -28,8 +28,18 @@ export default function AdminMessages() {
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!confirm("Delete this message?")) return;
-    // In a full implementation, you'd add a DELETE /api/contact endpoint
-    toast.error("Delete endpoint not implemented in this demo.");
+    try {
+      const res = await fetch(`/api/contact?id=${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setMessages(msgs => msgs.filter(m => m._id !== id));
+        if (selected?._id === id) setSelected(null);
+        toast.success("Message deleted successfully");
+      } else {
+        toast.error("Failed to delete message");
+      }
+    } catch {
+      toast.error("Error deleting message");
+    }
   };
 
   return (

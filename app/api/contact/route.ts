@@ -61,3 +61,21 @@ export async function PUT(req: NextRequest) {
         return NextResponse.json({ error: "Update failed" }, { status: 500 });
     }
 }
+
+export async function DELETE(req: NextRequest) {
+    try {
+        const admin = await getAdminUser();
+        if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+        await connectDB();
+        const { searchParams } = new URL(req.url);
+        const id = searchParams.get("id");
+        if (!id) return NextResponse.json({ error: "ID is required" }, { status: 400 });
+
+        await Contact.findByIdAndDelete(id);
+        return NextResponse.json({ success: true, message: "Deleted" });
+    } catch {
+        return NextResponse.json({ error: "Delete failed" }, { status: 500 });
+    }
+}
+
